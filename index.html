@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#e7f58a" id="themeColor" />
+<meta name="description" content="E se tivesses investido em vez disso? Compara hábitos de gasto com ações e ETF das bolsas dos EUA." />
+<title>investe-ou — E se tivesses investido?</title>
+<script>
+(function () {
+  var t = localStorage.getItem("investeou-theme");
+  if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23292c24'/%3E%3Cpath d='M8 20l5-8 4 5 7-9' stroke='%23d6f26a' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,640&family=Outfit:wght@380;480;580;680&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #292c24;
+    --muted: #6e7564;
+    --line: #e4e6dc;
+    --paper: #f6f5ef;
+    --card: #fffcf7;
+    --lime: #d7f26b;
+    --lime-deep: #b6d24a;
+    --olive: #3c4a32;
+    --spent: #c46a4a;
+    --gain: #2f6b45;
+    --shadow: 0 18px 50px rgba(41, 44, 36, .08);
+    --header: rgba(255,254,251,.9);
+    --nav: #f0f3e8;
+    --chip: #fff;
+    --seg: #f3f4ee;
+    --on: #fff;
+    --field: #fff;
+    --soft: #f4f7ea;
+    --kpi: #f7f6f1;
+    --chart: #fcfbf7;
+    --grid: #eceadf;
+    --hover: #f7f8f2;
+    --glow-a: #f3f7d8;
+    --glow-b: #efe7d4;
+    --dot: rgba(41,44,36,.16);
+    --primary: #292c24;
+    --primary-ink: #f6f7ef;
+    --em: #4d6140;
+    --lead: #4e5546;
+  }
+  html[data-theme="dark"] {
+    --ink: #f2f4ec;
+    --muted: #a7b09b;
+    --line: #31382d;
+    --paper: #121510;
+    --card: #1b2019;
+    --lime: #d7f26b;
+    --lime-deep: #c6e25a;
+    --olive: #d7e7b4;
+    --spent: #e08a6c;
+    --gain: #9dcea8;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+    --header: rgba(18,21,16,.88);
+    --nav: #2a3226;
+    --chip: #1b2019;
+    --seg: #242a21;
+    --on: #2e3629;
+    --field: #151913;
+    --soft: #242b20;
+    --kpi: #22281f;
+    --chart: #161b14;
+    --grid: #2c3328;
+    --hover: #2a3126;
+    --glow-a: #1c2614;
+    --glow-b: #1a1812;
+    --dot: rgba(215,242,107,.14);
+    --primary: #d7f26b;
+    --primary-ink: #1c2118;
+    --em: #d7f26b;
+    --lead: #c5ccba;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Outfit, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 12% -10%, var(--glow-a) 0, transparent 42%),
+      radial-gradient(circle at 100% 0, var(--glow-b) 0, transparent 36%),
+      var(--paper);
+    min-height: 100vh;
+  }
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(#000, transparent 78%);
+    opacity: .35;
+  }
+  a { color: inherit; }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 28px;
+    background: var(--header);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+  .brand b { font-family: Fraunces, serif; font-size: 22px; font-weight: 640; letter-spacing: -.03em; }
+  .brand b span { color: #7d8a62; }
+  .pill {
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    background: var(--lime); color: var(--olive); border-radius: 999px;
+    padding: 3px 8px; font-weight: 680;
+  }
+  nav { display: flex; gap: 8px; align-items: center; }
+  .ghost, .navbtn {
+    border: 0; background: transparent; color: var(--muted);
+    font: inherit; font-size: 14px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  }
+  .navbtn.active { background: var(--nav); color: var(--olive); }
+  .theme {
+    border: 1px solid var(--line); background: var(--chip); color: var(--ink);
+    font: inherit; font-size: 13px; padding: 8px 12px; border-radius: 999px; cursor: pointer;
+  }
+  .stats { display: flex; gap: 14px; color: var(--muted); font-size: 13px; }
+  .stats strong { color: var(--ink); }
+  main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 70px; position: relative; }
+  .eyebrow { letter-spacing: .16em; font-size: 12px; color: #7b846c; font-weight: 680; }
+  h1 {
+    font-family: Fraunces, serif; font-weight: 640; letter-spacing: -.04em;
+    font-size: clamp(40px, 6vw, 68px); line-height: .95; margin: 10px 0 14px;
+  }
+  h1 em { font-style: italic; color: var(--em); }
+  .lead { max-width: 640px; color: var(--lead); font-size: 18px; line-height: 1.45; margin: 0 0 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .chip {
+    background: var(--chip); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 12px; font-size: 13px; color: #44503c;
+  }
+  .layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 22px; align-items: start; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: var(--shadow); padding: 18px;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 18px; }
+  .step { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .seg { display: flex; background: var(--seg); padding: 4px; border-radius: 12px; margin: 14px 0; gap: 4px; }
+  .seg button, .mini button {
+    flex: 1; border: 0; background: transparent; font: inherit; cursor: pointer;
+    padding: 9px 8px; border-radius: 9px; color: var(--muted);
+  }
+  .seg button.on, .mini button.on { background: var(--on); color: var(--olive); box-shadow: 0 1px 2px rgba(0,0,0,.04); font-weight: 580; }
+  label { display: block; font-size: 13px; color: #5d6554; margin: 12px 0 6px; }
+  input, select {
+    width: 100%; border: 1px solid var(--line); background: var(--field); color: var(--ink);
+    border-radius: 12px; padding: 11px 12px; font: inherit; font-size: 15px;
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row3 { display: grid; grid-template-columns: 1.4fr .8fr .9fr; gap: 10px; }
+  .searchwrap { position: relative; }
+  .results {
+    position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 4px);
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    max-height: 240px; overflow: auto; box-shadow: var(--shadow); display: none;
+  }
+  .results.show { display: block; }
+  .results button {
+    width: 100%; text-align: left; border: 0; background: transparent; font: inherit;
+    padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; color: var(--ink);
+  }
+  .results button:hover { background: var(--hover); }
+  .tag { font-size: 11px; color: #7d866f; }
+  .picked {
+    margin-top: 8px; display: flex; justify-content: space-between; align-items: center;
+    background: var(--soft); border-radius: 12px; padding: 10px 12px;
+  }
+  .picked b { font-size: 14px; }
+  .note { color: var(--muted); font-size: 13px; line-height: 1.45; }
+  .primary {
+    width: 100%; margin-top: 16px; border: 0; cursor: pointer;
+    background: var(--primary); color: var(--primary-ink); font: inherit; font-weight: 580;
+    border-radius: 14px; padding: 14px 16px; font-size: 16px;
+  }
+  .primary:hover { filter: brightness(1.08); }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .kpi { background: var(--kpi); border-radius: 14px; padding: 12px; }
+  .kpi span { display: block; color: var(--muted); font-size: 12px; }
+  .kpi strong { font-size: 20px; letter-spacing: -.03em; }
+  .up { color: var(--gain); } .down { color: var(--spent); }
+  .chartbox { margin-top: 14px; background: var(--chart); border: 1px solid var(--line); border-radius: 16px; padding: 10px; }
+  canvas.chart { width: 100%; height: 320px; display: block; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); padding: 4px 6px 0; }
+  .dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; margin-right: 6px; }
+  .preview-wrap { position: sticky; top: 78px; }
+  .phone {
+    background: #1b1e18; color: #f4f6ee; border-radius: 28px; padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .phone top, .bar { display: flex; justify-content: space-between; font-size: 12px; color: #b7beab; margin-bottom: 8px; }
+  canvas.story { width: 100%; aspect-ratio: 9/16; border-radius: 18px; display: block; background: #10130e; }
+  .controls { display: flex; gap: 8px; margin-top: 10px; }
+  .controls button, .mini2 {
+    border: 0; background: #2a2e26; color: #eef2e4; font: inherit; border-radius: 10px;
+    padding: 8px 10px; cursor: pointer;
+  }
+  .slider { width: 100%; margin-top: 8px; accent-color: var(--lime); }
+  .wall { margin-top: 34px; }
+  .wall h2 { font-family: Fraunces, serif; font-size: 32px; margin: 0 0 6px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .ex {
+    text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 16px;
+    padding: 14px; cursor: pointer; font: inherit; color: inherit;
+  }
+  .ex:hover { border-color: #c9d3a4; }
+  .ex small { color: var(--muted); }
+  footer { width: min(1180px, calc(100% - 32px)); margin: 0 auto 40px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .fine { margin-top: 12px; }
+  details { margin-top: 10px; }
+  @media (max-width: 900px) {
+    header { padding: 12px 14px; }
+    .stats { display: none; }
+    .layout, .grid, .row3 { grid-template-columns: 1fr; }
+    .preview-wrap { position: static; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#topo"><b>investe<span>-ou</span></b> <span class="pill">PT</span></a>
+  <nav>
+    <button class="navbtn active" id="tabMake">Criar comparação</button>
+    <button class="navbtn" id="tabWall">Mural de e-ses</button>
+  </nav>
+  <div class="stats"><span><strong id="statN">0</strong> comparações neste browser</span></div>
+  <button class="theme" id="themeBtn" type="button" aria-label="Alternar modo escuro">Modo escuro</button>
+</header>
+<main id="topo">
+  <p class="eyebrow">Pequenos hábitos. Outras linhas do tempo.</p>
+  <h1>E se tivesses<br>investido <em>em vez disso?</em></h1>
+  <p class="lead">O dinheiro do dia a dia, com um final alternativo. Compara um hábito — ou dois planos — apenas com ações e ETF cotados nas bolsas dos Estados Unidos.</p>
+  <div class="chips">
+    <span class="chip">100% gratuito</span>
+    <span class="chip">Feito no teu browser</span>
+    <span class="chip">Sem conta</span>
+    <span class="chip">Só NYSE, Nasdaq e ETF americanos</span>
+  </div>
+  <div class="layout">
+    <section class="card" id="maker">
+      <div class="step">01 → 03 · o teu e-se</div>
+      <div class="seg" role="tablist">
+        <button id="modeHabit" class="on" type="button">Hábito vs investimento</button>
+        <button id="modeCmp" type="button">Comparar investimentos</button>
+      </div>
+
+      <div id="habitBlock">
+        <h2>Torna-o pessoal</h2>
+        <div class="row3">
+          <div>
+            <label for="habit">Nome do hábito</label>
+            <input id="habit" value="Bica" />
+          </div>
+          <div>
+            <label for="amount">Quanto?</label>
+            <input id="amount" type="number" min="0.01" step="0.01" value="0.90" />
+          </div>
+          <div>
+            <label for="ccy">Moeda do valor</label>
+            <select id="ccy"><option value="EUR">EUR — euro</option><option value="USD">USD — dólar</option></select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="freq">Com que frequência?</label>
+            <select id="freq">
+              <option value="day">Todos os dias</option>
+              <option value="week">Todas as semanas</option>
+              <option value="month">Todos os meses</option>
+            </select>
+          </div>
+          <div>
+            <label for="outccy">Mostrar o resultado em</label>
+            <select id="outccy"><option value="EUR">Euros</option><option value="USD">Dólares</option></select>
+          </div>
+        </div>
+        <p class="note" id="wording"></p>
+      </div>
+
+      <div id="cmpBlock" hidden>
+        <h2>Dois planos, o mesmo dinheiro</h2>
+        <p class="note">O mesmo montante, a mesma cadência, dois ativos americanos. Vês qual linha do tempo ficava à frente.</p>
+      </div>
+
+      <label>Mercado</label>
+      <div class="mini seg">
+        <button type="button" class="on" data-filter="all">Todos os EUA</button>
+        <button type="button" data-filter="Ação">Ações</button>
+        <button type="button" data-filter="ETF">ETF</button>
+      </div>
+      <label for="q">Investir nisto em vez disso</label>
+      <div class="searchwrap">
+        <input id="q" placeholder="Procura Apple, S&P 500, QQQ…" autocomplete="off" />
+        <div class="results" id="list"></div>
+      </div>
+      <div class="picked"><div><b id="pickName">SPDR S&P 500</b><div class="tag" id="pickMeta">SPY · ETF · NYSE Arca</div></div><div class="tag">ativo A</div></div>
+
+      <div id="secondPick" hidden>
+        <label for="q2">Comparar com</label>
+        <div class="searchwrap">
+          <input id="q2" placeholder="Segundo ativo americano…" autocomplete="off" />
+          <div class="results" id="list2"></div>
+        </div>
+        <div class="picked"><div><b id="pickName2">Invesco QQQ</b><div class="tag" id="pickMeta2">QQQ · ETF · Nasdaq</div></div><div class="tag">ativo B</div></div>
+      </div>
+
+      <div class="row">
+        <div><label for="from">De</label><input id="from" type="month" value="2016-01" /></div>
+        <div><label for="to">Até</label><input id="to" type="month" value="2026-09" /></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
+        <input id="infl" type="checkbox" style="width:auto" /> Ajustar à inflação americana (o valor de hoje recua com o CPI)
+      </label>
+      <p class="note">Preços mensais ajustados a dividendos e desdobramentos. A contribuição de cada mês compra ao fecho desse mês. Sem cripto, sem Euronext, sem PSI.</p>
+      <button class="primary" id="go" type="button">Ver a outra linha do tempo</button>
+      <div class="kpis" id="kpis"></div>
+      <div class="chartbox">
+        <div class="legend">
+          <span><i class="dot" style="background:#c46a4a"></i>Gasto / aplicado</span>
+          <span><i class="dot" style="background:#d7f26b"></i><span id="legA">Investido</span></span>
+          <span id="legBwrap" hidden><i class="dot" style="background:#8eb6ff"></i><span id="legB">Ativo B</span></span>
+        </div>
+        <canvas class="chart" id="chart" width="900" height="420"></canvas>
+      </div>
+      <details>
+        <summary>As letras pequenas, sem letra minúscula</summary>
+        <p class="note">Isto é um exercício ilustrativo, não aconselhamento de investimento, fiscal ou cambial. Não inclui comissões, impostos sobre mais-valias ou dividendos, spreads nem o câmbio intradiário. O universo está limitado a um conjunto de ações e ETF dos EUA. Rentabilidades passadas não garantem resultados futuros.</p>
+      </details>
+    </section>
+
+    <aside class="preview-wrap">
+      <div class="phone">
+        <div class="bar"><span>A tua história</span><span>pré-visualização</span></div>
+        <canvas class="story" id="story" width="720" height="1280"></canvas>
+        <input class="slider" id="scrub" type="range" min="0" max="100" value="100" />
+        <div class="controls">
+          <button id="play" type="button">Reproduzir</button>
+          <button id="png" type="button">Descarregar imagem</button>
+          <button id="webm" type="button">Descarregar vídeo</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="wall" id="wall">
+    <h2>Mural de e-ses</h2>
+    <p class="note">Exemplos para abrir. Cada cartão carrega um hábito português e um ativo americano.</p>
+    <div class="grid" id="examples"></div>
+  </section>
+</main>
+<footer>
+  <strong>investe-ou</strong> — um hábito pequeno, uma linha do tempo muito diferente. Feito para português de Portugal. Só podes comparar com ativos das bolsas dos EUA.
+  <div class="fine">Dados de fecho mensal ajustado, via séries públicas de mercado, embutidos nesta página para funcionar sem servidor. Último mês incluído: outubro de 2026, conforme a série disponível. Não é uma recomendação de compra ou venda.</div>
+</footer>
+<script src="data.js"></script>
+<script>
+const CPI = {1984:103.9,1985:107.6,1986:109.6,1987:113.6,1988:118.3,1989:124.0,1990:130.7,1991:136.2,1992:140.3,1993:144.5,1994:148.2,1995:152.4,1996:156.9,1997:160.5,1998:163.0,1999:166.6,2000:172.2,2001:177.1,2002:179.9,2003:184.0,2004:188.9,2005:195.3,2006:201.6,2007:207.3,2008:215.3,2009:214.5,2010:218.1,2011:224.9,2012:229.6,2013:233.0,2014:236.7,2015:237.0,2016:240.0,2017:245.1,2018:251.1,2019:255.7,2020:258.8,2021:271.0,2022:292.7,2023:304.7,2024:313.7,2025:321.4,2026:328.0};
+const EXCH = {AAPL:"Nasdaq",MSFT:"Nasdaq",GOOGL:"Nasdaq",AMZN:"Nasdaq",NVDA:"Nasdaq",META:"Nasdaq",TSLA:"Nasdaq",AVGO:"Nasdaq",COST:"Nasdaq",NFLX:"Nasdaq",AMD:"Nasdaq",INTC:"Nasdaq",CRM:"Nasdaq",ADBE:"Nasdaq",CSCO:"Nasdaq",SBUX:"Nasdaq",QQQ:"Nasdaq",VUG:"NYSE Arca",XLK:"NYSE Arca","BRK-B":"NYSE",JPM:"NYSE",V:"NYSE",JNJ:"NYSE",UNH:"NYSE",XOM:"NYSE",LLY:"NYSE",WMT:"NYSE",PG:"NYSE",HD:"NYSE",MA:"NYSE",KO:"NYSE",PEP:"NYSE",DIS:"NYSE",BA:"NYSE",CAT:"NYSE",GS:"NYSE",ORCL:"NYSE",PFE:"NYSE",MRK:"NYSE",ABBV:"NYSE",CVX:"NYSE",MCD:"NYSE",NKE:"NYSE",SPY:"NYSE Arca",DIA:"NYSE Arca",VOO:"NYSE Arca",SCHD:"NYSE Arca",VTV:"NYSE Arca",XLF:"NYSE Arca",XLE:"NYSE Arca",GLD:"NYSE Arca",BND:"NYSE Arca",VTI:"NYSE Arca",IWM:"NYSE Arca"};
+const $ = (id) => document.getElementById(id);
+const prices = window.PRICES;
+const assets = Object.keys(prices).filter(s => s !== "EURUSD=X").map(s => ({s, ...prices[s], exch: EXCH[s] || "EUA"}));
+let filter = "all", pick = "SPY", pick2 = "QQQ", mode = "habit", series = null, playing = false;
+
+function fmt(n, ccy) {
+  return new Intl.NumberFormat("pt-PT", { style: "currency", currency: ccy, maximumFractionDigits: 0 }).format(n || 0);
+}
+function fmt2(n, ccy) {
+  return new Intl.NumberFormat("pt-PT", { style: "currency", currency: ccy, maximumFractionDigits: 2 }).format(n || 0);
+}
+function monthsBetween(a, b) {
+  const [y1,m1] = a.split("-").map(Number), [y2,m2] = b.split("-").map(Number);
+  const out = [];
+  for (let y=y1,m=m1; y<y2 || (y===y2 && m<=m2); m++) {
+    if (m===13) { m=1; y++; }
+    out.push(`${y}-${String(m).padStart(2,"0")}`);
+    if (y===y2 && m===m2) break;
+  }
+  return out;
+}
+function daysIn(ym) {
+  const [y,m] = ym.split("-").map(Number);
+  return new Date(y, m, 0).getDate();
+}
+function mapPx(symbol) {
+  const map = {};
+  for (const [d,p] of prices[symbol].px) map[d] = p;
+  return map;
+}
+function pxAt(map, ym) {
+  if (map[ym] != null) return map[ym];
+  const keys = Object.keys(map).sort();
+  let last = null;
+  for (const k of keys) { if (k <= ym) last = map[k]; else break; }
+  return last;
+}
+function cpi(ym) { return CPI[+ym.slice(0,4)] || CPI[2026]; }
+function fxAt(ym) { return pxAt(mapPx("EURUSD=X"), ym) || 1.1; }
+
+function simulate(symbol, amount, freq, ccy, from, to, inflate) {
+  const map = mapPx(symbol);
+  const months = monthsBetween(from, to).filter(ym => pxAt(map, ym));
+  let shares = 0, spentUSD = 0;
+  const pts = [];
+  const todayCpi = cpi(to);
+  for (const ym of months) {
+    const price = pxAt(map, ym);
+    let nominal = amount;
+    if (inflate) nominal = amount * (cpi(ym) / todayCpi);
+    let usd = ccy === "USD" ? nominal : nominal * fxAt(ym);
+    if (freq === "day") usd *= daysIn(ym);
+    if (freq === "week") usd *= daysIn(ym) / 7;
+    shares += usd / price;
+    spentUSD += usd;
+    pts.push({ ym, spentUSD, valueUSD: shares * price, price });
+  }
+  return pts;
+}
+
+function toOut(usd, ym, out) {
+  if (out === "USD") return usd;
+  return usd / fxAt(ym);
+}
+
+function run() {
+  const amount = Math.max(0.01, +$("amount").value || 0);
+  const freq = $("freq").value, ccy = $("ccy").value, out = $("outccy").value;
+  const from = $("from").value, to = $("to").value, inflate = $("infl").checked;
+  if (from > to) { alert("A data de início tem de ser anterior à data de fim."); return; }
+  const a = simulate(pick, amount, freq, ccy, from, to, inflate);
+  const b = mode === "cmp" ? simulate(pick2, amount, freq, ccy, from, to, inflate) : null;
+  if (!a.length) { alert("Não há preços para esse intervalo. Escolhe datas mais recentes."); return; }
+  series = { a, b, out, amount, freq, ccy, habit: $("habit").value || "Hábito" };
+  drawChart(1);
+  drawStory(1);
+  renderKpis();
+  const n = +(localStorage.getItem("investeou") || 0) + 1;
+  localStorage.setItem("investeou", n);
+  $("statN").textContent = new Intl.NumberFormat("pt-PT").format(n);
+  wording();
+}
+function wording() {
+  const freq = {day:"todos os dias", week:"todas as semanas", month:"todos os meses"}[$("freq").value];
+  const name = $("habit").value || "isso";
+  $("wording").textContent = `${fmt2(+$("amount").value, $("ccy").value)} ${freq} em ${name} — ou em ${prices[pick].name}?`;
+}
+function renderKpis() {
+  const { a, b, out } = series;
+  const last = a[a.length-1];
+  const spent = toOut(last.spentUSD, last.ym, out);
+  const val = toOut(last.valueUSD, last.ym, out);
+  const diff = val - spent;
+  const mult = spent ? val / spent : 0;
+  const items = [
+    ["Gastaste / aplicaste", fmt(spent, out)],
+    [`Se fosse ${prices[pick].name}`, fmt(val, out)],
+    ["Diferença", fmt(diff, out)],
+    ["Vezes o dinheiro", mult.toLocaleString("pt-PT", { maximumFractionDigits: 2 }) + "×"]
+  ];
+  if (b && b.length) {
+    const lb = b[b.length-1];
+    items[1] = [prices[pick].name, fmt(toOut(last.valueUSD, last.ym, out), out)];
+    items.push([prices[pick2].name, fmt(toOut(lb.valueUSD, lb.ym, out), out)]);
+  }
+  $("kpis").innerHTML = items.map(([k,v]) => `<div class="kpi"><span>${k}</span><strong class="${String(v).includes("-")?"down":""}">${v}</strong></div>`).join("");
+  $("legA").textContent = prices[pick].name;
+  $("legB").textContent = prices[pick2].name;
+  $("legBwrap").hidden = mode !== "cmp";
+}
+function axisLabel(n, ccy) {
+  return new Intl.NumberFormat("pt-PT", { style: "currency", currency: ccy, maximumFractionDigits: 0 }).format(n || 0);
+}
+function niceScale(max) {
+  if (!(max > 0)) return { top: 1, tick: 0.25 };
+  const pow = Math.pow(10, Math.floor(Math.log10(max)));
+  const n = max / pow;
+  const step = n <= 1.2 ? 0.2 : n <= 2.5 ? 0.5 : n <= 5 ? 1 : 2;
+  const tick = step * pow;
+  return { top: Math.ceil(max / tick) * tick, tick };
+}
+function drawChart(t) {
+  const c = $("chart");
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const rect = c.getBoundingClientRect();
+  const w = Math.max(320, rect.width || 640);
+  const h = Math.max(240, rect.height || 320);
+  c.width = Math.round(w * dpr);
+  c.height = Math.round(h * dpr);
+  const ctx = c.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  const { a, b, out } = series;
+  const n = Math.max(2, Math.round(a.length * t));
+  const slice = a.slice(0, n);
+  const bslice = b ? b.slice(0, Math.min(n, b.length)) : [];
+  const vals = [];
+  slice.forEach(p => vals.push(toOut(p.spentUSD, p.ym, out), toOut(p.valueUSD, p.ym, out)));
+  bslice.forEach(p => vals.push(toOut(p.valueUSD, p.ym, out)));
+  const { top, tick } = niceScale(Math.max(...vals, 1) * 1.08);
+  const padL = 86, padR = 96, padT = 16, padB = 28;
+  const X = i => padL + (i / Math.max(1, slice.length - 1)) * (w - padL - padR);
+  const Y = v => h - padB - (v / top) * (h - padT - padB);
+  ctx.font = "12px Outfit, sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for (let v = 0; v <= top + tick * 0.01; v += tick) {
+    const y = Y(v);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid").trim() || "#eceadf";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR + 8, y);
+    ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#6e7564";
+    ctx.fillText(axisLabel(v, out), padL - 8, y);
+  }
+  const endLabels = [];
+  function line(arr, color, key) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    arr.forEach((p, i) => {
+      const v = toOut(p[key], p.ym, out);
+      i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v));
+    });
+    ctx.stroke();
+    const last = arr[arr.length - 1];
+    const v = toOut(last[key], last.ym, out);
+    const x = X(arr.length - 1), y = Y(v);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    endLabels.push({ x, y, color, text: axisLabel(v, out) });
+  }
+  const dark = document.documentElement.dataset.theme === "dark";
+  line(slice, dark ? "#e08a6c" : "#c46a4a", "spentUSD");
+  line(slice, dark ? "#d7f26b" : "#7ea52a", "valueUSD");
+  if (bslice.length) line(bslice, dark ? "#8eb6ff" : "#3d74d6", "valueUSD");
+  endLabels.sort((p, q) => p.y - q.y);
+  for (let i = 1; i < endLabels.length; i++) {
+    if (endLabels[i].y - endLabels[i - 1].y < 16) endLabels[i].y = endLabels[i - 1].y + 16;
+  }
+  ctx.font = "600 12px Outfit, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  endLabels.forEach(l => {
+    ctx.fillStyle = l.color;
+    ctx.fillText(l.text, l.x + 8, l.y);
+  });
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#6e7564";
+  ctx.font = "12px Outfit, sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(slice[0].ym, padL, h - 8);
+  ctx.textAlign = "right";
+  ctx.fillText(slice[slice.length - 1].ym, w - padR + 8, h - 8);
+}
+function drawStory(t) {
+  const c = $("story"), ctx = c.getContext("2d");
+  const w = c.width, h = c.height;
+  ctx.clearRect(0,0,w,h);
+  const g = ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0, "#1c2118"); g.addColorStop(1, "#10140e");
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  for (let y=40; y<h; y+=28) for (let x=20; x<w; x+=28) {
+    ctx.fillStyle = "rgba(215,242,107,.13)"; ctx.beginPath(); ctx.arc(x,y,1.2,0,7); ctx.fill();
+  }
+  const { a, b, out, habit } = series;
+  const n = Math.max(1, Math.round((a.length-1) * t));
+  const p = a[n];
+  const spent = toOut(p.spentUSD, p.ym, out);
+  const val = toOut(p.valueUSD, p.ym, out);
+  ctx.fillStyle = "#d7f26b"; ctx.font = "600 22px Outfit, sans-serif";
+  ctx.fillText("E SE TIVESSES INVESTIDO", 48, 90);
+  ctx.fillStyle = "#f4f6ee"; ctx.font = "640 54px Fraunces, serif";
+  wrap(ctx, habit, 48, 160, 620, 62);
+  ctx.fillStyle = "#aeb6a2"; ctx.font = "26px Outfit, sans-serif";
+  ctx.fillText(p.ym + "  ·  só bolsas dos EUA", 48, 300);
+  ctx.fillStyle = "#c46a4a"; ctx.font = "600 22px Outfit, sans-serif";
+  ctx.fillText(mode==="cmp" ? "DINHEIRO APLICADO" : "GASTO", 48, 390);
+  ctx.fillStyle = "#fff"; ctx.font = "640 64px Fraunces, serif";
+  ctx.fillText(fmt(spent, out), 48, 460);
+  ctx.fillStyle = "#d7f26b"; ctx.font = "600 22px Outfit, sans-serif";
+  ctx.fillText(prices[pick].name.toUpperCase(), 48, 560);
+  ctx.fillStyle = "#fff"; ctx.font = "640 72px Fraunces, serif";
+  ctx.fillText(fmt(val, out), 48, 640);
+  if (b) {
+    const pb = b[Math.min(n, b.length-1)];
+    ctx.fillStyle = "#8eb6ff"; ctx.font = "600 22px Outfit, sans-serif";
+    ctx.fillText(prices[pick2].name.toUpperCase(), 48, 730);
+    ctx.fillStyle = "#fff"; ctx.font = "640 56px Fraunces, serif";
+    ctx.fillText(fmt(toOut(pb.valueUSD, pb.ym, out), out), 48, 800);
+  } else {
+    const diff = val - spent;
+    ctx.fillStyle = diff>=0 ? "#b7e38a" : "#e7a090"; ctx.font = "30px Outfit, sans-serif";
+    ctx.fillText((diff>=0?"mais ":"menos ") + fmt(Math.abs(diff), out), 48, 730);
+  }
+  // mini chart
+  const x0=48, y0=980, ww=620, hh=180;
+  ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.strokeRect(x0,y0,ww,hh);
+  const slice = a.slice(0, n+1);
+  const max = Math.max(...slice.map(d => Math.max(d.spentUSD, d.valueUSD)), 1);
+  ctx.beginPath(); ctx.strokeStyle = "#c46a4a"; ctx.lineWidth = 4;
+  slice.forEach((d,i) => { const x=x0+i/(slice.length-1||1)*ww, y=y0+hh-(d.spentUSD/max)*hh; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = "#d7f26b";
+  slice.forEach((d,i) => { const x=x0+i/(slice.length-1||1)*ww, y=y0+hh-(d.valueUSD/max)*hh; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+  ctx.fillStyle = "#8d9682"; ctx.font = "22px Outfit, sans-serif";
+  ctx.fillText("investe-ou  ·  exercício, não conselho", 48, 1220);
+}
+function wrap(ctx, text, x, y, max, lh) {
+  const words = String(text).split(" "); let line = "";
+  for (const w of words) {
+    const t = line ? line+" "+w : w;
+    if (ctx.measureText(t).width > max) { ctx.fillText(line, x, y); y += lh; line = w; }
+    else line = t;
+  }
+  ctx.fillText(line, x, y);
+}
+function search(input, list, onpick) {
+  const q = input.value.trim().toLowerCase();
+  const rows = assets.filter(a => filter==="all" || a.kind===filter)
+    .filter(a => !q || a.s.toLowerCase().includes(q) || a.name.toLowerCase().includes(q))
+    .slice(0, 8);
+  list.innerHTML = rows.map(a => `<button type="button" data-s="${a.s}"><span>${a.name}</span><span class="tag">${a.s} · ${a.kind} · ${a.exch}</span></button>`).join("") || `<button type="button" disabled>Sem resultados nos EUA</button>`;
+  list.classList.add("show");
+  list.querySelectorAll("button[data-s]").forEach(btn => btn.onclick = () => { onpick(btn.dataset.s); list.classList.remove("show"); });
+}
+function setPick(s) {
+  pick = s; const a = prices[s];
+  $("pickName").textContent = a.name;
+  $("pickMeta").textContent = `${s} · ${a.kind} · ${EXCH[s]||"EUA"}`;
+  $("q").value = "";
+  wording();
+}
+function setPick2(s) {
+  pick2 = s; const a = prices[s];
+  $("pickName2").textContent = a.name;
+  $("pickMeta2").textContent = `${s} · ${a.kind} · ${EXCH[s]||"EUA"}`;
+  $("q2").value = "";
+}
+$("q").addEventListener("input", () => search($("q"), $("list"), setPick));
+$("q").addEventListener("focus", () => search($("q"), $("list"), setPick));
+$("q2").addEventListener("input", () => search($("q2"), $("list2"), setPick2));
+$("q2").addEventListener("focus", () => search($("q2"), $("list2"), setPick2));
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".searchwrap")) document.querySelectorAll(".results").forEach(r => r.classList.remove("show"));
+});
+document.querySelectorAll(".mini button").forEach(btn => btn.onclick = () => {
+  document.querySelectorAll(".mini button").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on"); filter = btn.dataset.filter;
+});
+function setMode(m) {
+  mode = m;
+  $("modeHabit").classList.toggle("on", m==="habit");
+  $("modeCmp").classList.toggle("on", m==="cmp");
+  $("habitBlock").hidden = m==="cmp";
+  $("cmpBlock").hidden = m!=="cmp";
+  $("secondPick").hidden = m!=="cmp";
+}
+$("modeHabit").onclick = () => setMode("habit");
+$("modeCmp").onclick = () => setMode("cmp");
+["habit","amount","freq","ccy"].forEach(id => $(id).addEventListener("input", wording));
+$("go").onclick = run;
+$("scrub").oninput = () => { if (!series) return; const t = $("scrub").value/100; drawChart(Math.max(0.02,t)); drawStory(Math.max(0.02,t)); };
+$("play").onclick = async () => {
+  if (!series || playing) return; playing = true;
+  for (let i=0;i<=100;i++) { $("scrub").value=i; drawChart(i/100); drawStory(i/100); await new Promise(r=>setTimeout(r,28)); }
+  playing = false;
+};
+$("png").onclick = () => {
+  if (!series) run();
+  const a = document.createElement("a");
+  a.href = $("story").toDataURL("image/png");
+  a.download = "investe-ou.png"; a.click();
+};
+$("webm").onclick = async () => {
+  if (!series) run();
+  const stream = $("story").captureStream(30);
+  const rec = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : undefined });
+  const chunks = [];
+  rec.ondataavailable = e => chunks.push(e.data);
+  const done = new Promise(res => rec.onstop = res);
+  rec.start();
+  for (let i=0;i<=100;i++) { $("scrub").value=i; drawStory(i/100); drawChart(i/100); await new Promise(r=>setTimeout(r,30)); }
+  rec.stop(); await done;
+  const url = URL.createObjectURL(new Blob(chunks, { type: "video/webm" }));
+  const a = document.createElement("a"); a.href = url; a.download = "investe-ou.webm"; a.click();
+};
+const examples = [
+  ["Bica","0.90","day","EUR","SPY","2016-01","A bica de todos os dias no S&P 500"],
+  ["Netflix","13.99","month","EUR","NFLX","2016-01","A mensalidade, na própria ação"],
+  ["Almoço fora","12","week","EUR","VOO","2014-01","Um almoço por semana no Vanguard S&P 500"],
+  ["Uber","8","week","EUR","TSLA","2018-01","As viagens, em Tesla"],
+  ["Tabaco","6","day","EUR","SPY","2012-01","Um maço, no índice americano"],
+  ["Coca-Cola","1.5","day","EUR","KO","2010-01","O refrigerante, na Coca-Cola"]
+];
+$("examples").innerHTML = examples.map((e,i) => `<button class="ex" data-i="${i}"><b>${e[0]}</b> → ${prices[e[4]].name}<br><small>${e[6]}</small></button>`).join("");
+$("examples").onclick = (ev) => {
+  const btn = ev.target.closest(".ex"); if (!btn) return;
+  const e = examples[+btn.dataset.i];
+  setMode("habit");
+  $("habit").value = e[0]; $("amount").value = e[1]; $("freq").value = e[2]; $("ccy").value = e[3]; $("outccy").value = "EUR";
+  setPick(e[4]); $("from").value = e[5]; $("to").value = "2026-09";
+  run(); window.scrollTo({ top: 280, behavior: "smooth" });
+};
+$("tabWall").onclick = () => { $("tabWall").classList.add("active"); $("tabMake").classList.remove("active"); $("wall").scrollIntoView({behavior:"smooth"}); };
+$("tabMake").onclick = () => { $("tabMake").classList.add("active"); $("tabWall").classList.remove("active"); $("maker").scrollIntoView({behavior:"smooth"}); };
+$("statN").textContent = new Intl.NumberFormat("pt-PT").format(+(localStorage.getItem("investeou")||0));
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("investeou-theme", theme);
+  $("themeBtn").textContent = theme === "dark" ? "Modo claro" : "Modo escuro";
+  const meta = $("themeColor");
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#121510" : "#e7f58a");
+  if (series) { drawChart(+$("scrub").value / 100 || 1); }
+}
+$("themeBtn").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+applyTheme(document.documentElement.dataset.theme || "light");
+
+wording(); run();
+</script>
+</body>
+</html>
