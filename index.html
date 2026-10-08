@@ -122,6 +122,45 @@
   .brand b { font-family: Fraunces, serif; font-size: 22px; font-weight: 640; letter-spacing: -.03em; }
   .brand b span { color: #7d8a62; }
   html[data-theme="dark"] .brand b span { color: #c6d48a; }
+
+  html[data-theme="black"] {
+    --ink: #f5f5f5;
+    --muted: #a1a1a1;
+    --line: #242424;
+    --paper: #050505;
+    --card: rgba(12,12,12,.92);
+    --lime: #f4f4f4;
+    --lime-deep: #d4d4d4;
+    --olive: #f5f5f5;
+    --spent: #e7e7e7;
+    --gain: #ffffff;
+    --shadow: 0 24px 70px rgba(0,0,0,.55);
+    --header: rgba(5,5,5,.86);
+    --nav: #141414;
+    --chip: #111;
+    --seg: #141414;
+    --on: #222;
+    --field: #0c0c0c;
+    --soft: #141414;
+    --kpi: #101010;
+    --chart: #080808;
+    --grid: #262626;
+    --hover: #1a1a1a;
+    --glow-a: #161616;
+    --glow-b: #101010;
+    --dot: rgba(255,255,255,.12);
+    --primary: #f5f5f5;
+    --primary-ink: #111;
+    --em: #ffffff;
+    --lead: #cfcfcf;
+    --mark: #f5f5f5;
+    color-scheme: dark;
+  }
+  html[data-theme="black"] .brand b span { color: #bdbdbd; }
+  html[data-theme="black"] .pill { background: #f5f5f5; color: #111; }
+  html[data-theme="black"] .hero-card::after { background: #1c1c1c; opacity: 1; }
+  html[data-theme="black"] .mark svg path { stroke: #111; }
+
   .pill {
     font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
     background: var(--lime); color: #24301c; border-radius: 999px;
@@ -275,7 +314,7 @@
     <button class="navbtn" id="tabWall">Mural de e-ses</button>
   </nav>
   <div class="stats"><span><strong id="statN">0</strong> comparações neste browser</span></div>
-  <button class="theme" id="themeBtn" type="button" aria-label="Alternar modo escuro">Modo escuro</button>
+  <button class="theme" id="themeBtn" type="button" aria-label="Mudar tema">Tema verde</button>
 </header>
 <main id="topo">
   <section class="hero">
@@ -610,10 +649,15 @@ function drawChart(t) {
     ctx.fill();
     endLabels.push({ x, y, color, text: axisLabel(v, out) });
   }
-  const dark = document.documentElement.dataset.theme === "dark";
-  line(slice, dark ? "#e08a6c" : "#c46a4a", "spentUSD", dark ? "rgba(224,138,108,.12)" : "rgba(196,106,74,.10)");
-  line(slice, dark ? "#d7f26b" : "#6f9a28", "valueUSD", dark ? "rgba(215,242,107,.16)" : "rgba(126,165,42,.16)");
-  if (bslice.length) line(bslice, dark ? "#8eb6ff" : "#3d74d6", "valueUSD", "rgba(61,116,214,.12)");
+  const theme = document.documentElement.dataset.theme;
+  const spentC = theme === "black" ? "#f5f5f5" : theme === "dark" ? "#e08a6c" : "#c46a4a";
+  const valueC = theme === "black" ? "#8a8a8a" : theme === "dark" ? "#d7f26b" : "#6f9a28";
+  const altC = theme === "black" ? "#ffffff" : theme === "dark" ? "#8eb6ff" : "#3d74d6";
+  const spentF = theme === "black" ? "rgba(255,255,255,.08)" : theme === "dark" ? "rgba(224,138,108,.12)" : "rgba(196,106,74,.10)";
+  const valueF = theme === "black" ? "rgba(255,255,255,.05)" : theme === "dark" ? "rgba(215,242,107,.16)" : "rgba(126,165,42,.16)";
+  line(slice, spentC, "spentUSD", spentF);
+  line(slice, valueC, "valueUSD", valueF);
+  if (bslice.length) line(bslice, altC, "valueUSD", "rgba(255,255,255,.06)");
   endLabels.sort((p, q) => p.y - q.y);
   for (let i = 1; i < endLabels.length; i++) {
     if (endLabels[i].y - endLabels[i - 1].y < 16) endLabels[i].y = endLabels[i - 1].y + 16;
@@ -785,15 +829,22 @@ $("tabWall").onclick = () => { $("tabWall").classList.add("active"); $("tabMake"
 $("tabMake").onclick = () => { $("tabMake").classList.add("active"); $("tabWall").classList.remove("active"); $("maker").scrollIntoView({behavior:"smooth"}); };
 $("statN").textContent = new Intl.NumberFormat("pt-PT").format(+(localStorage.getItem("investeou")||0));
 
+const THEMES = ["light", "dark", "black"];
+const THEME_NEXT = { light: "Tema verde", dark: "Tema preto", black: "Tema claro" };
+const THEME_COLOR = { light: "#e7f58a", dark: "#121510", black: "#050505" };
 function applyTheme(theme) {
+  if (!THEMES.includes(theme)) theme = "light";
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("investeou-theme", theme);
-  $("themeBtn").textContent = theme === "dark" ? "Modo claro" : "Modo escuro";
+  $("themeBtn").textContent = THEME_NEXT[theme];
   const meta = $("themeColor");
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#121510" : "#e7f58a");
+  if (meta) meta.setAttribute("content", THEME_COLOR[theme]);
   if (series) { drawChart(+$("scrub").value / 100 || 1); }
 }
-$("themeBtn").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+$("themeBtn").onclick = () => {
+  const cur = document.documentElement.dataset.theme || "light";
+  applyTheme(THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]);
+};
 applyTheme(document.documentElement.dataset.theme || "light");
 
 wording(); run();
